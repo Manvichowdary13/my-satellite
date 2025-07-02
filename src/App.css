@@ -1,0 +1,178 @@
+/* src/App.css */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.app-container {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  background-color: #000; /* fallback color while maps load */
+}
+
+.map-container {
+  height: 100%;
+  width: 100%;
+}
+
+.cesium-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.map-overlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px 15px;
+  border-radius: 8px;
+  color: white;
+  z-index: 100;
+  max-width: 280px;
+  backdrop-filter: blur(4px);
+}
+
+.map-overlay input,
+.map-overlay select {
+  margin: 4px 0;
+  width: 100%;
+}
+
+
+/* src/App.css */
+
+/* Floating search + filter panel */
+.sat-filter {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;               /* Sit on top of the map */
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: white;
+  max-width: 300px;
+  backdrop-filter: blur(4px);
+}
+
+.sat-filter input,
+.sat-filter select {
+  padding: 4px 6px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  flex: 1 1 auto;
+  min-width: 80px;
+}
+
+/* Ensure map container is relative for absolute positioning */
+.app-container, .map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Satellite info panel styling if you need to adjust */
+.sat-info-panel {
+  position: absolute;
+  right: 10px;
+  top: 60px;
+  z-index: 1000;
+}
+
+/* src/App.css */
+
+/* Map switcher bottom‑right */
+.map-switcher {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.map-switcher button {
+  padding: 0.5rem 1rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.map-switcher button.active {
+  opacity: 1;
+  background-color: #007bff;
+}
+
+/* src/components/CesiumViewer.css */
+.cesium-loading {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.2rem;
+  z-index: 10;
+}
+.cesium-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* SatelliteInfoPanel.css */
+
+.sat-info-panel {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 20px;
+  max-width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.overpass-panel {
+  position: fixed;
+  top: calc(80px + 320px); /* adjust based on height of sat-info-panel */
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 300px;
+  z-index: 999;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
