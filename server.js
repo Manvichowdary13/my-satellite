@@ -1,21 +1,24 @@
+// server.js
 import express from "express";
 import axios from "axios";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// For ES modules: __dirname workaround
+// Workaround for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// Enable CORS
 app.use(cors());
-app.use(express.static(path.join(__dirname, "../client/dist"))); // serve frontend
 
-// Satellite logic
+// Serve static frontend build (dist folder)
+app.use(express.static(path.join(__dirname, "dist")));
+
+// Satellite categorization logic
 function guessType(name) {
   const n = name.toLowerCase();
   if (n.includes("starlink")) return "LEO";
@@ -36,18 +39,16 @@ function guessCountry(name) {
   return "Unknown";
 }
 
-// Proxy API route
+// API route
 app.get("/api/tle", async (req, res) => {
   try {
     const response = await axios.get("https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle");
-
     const lines = response.data.trim().split("\n");
     const satellites = [];
 
     for (let i = 0; i < lines.length; i += 3) {
       if (i + 2 >= lines.length) break;
       const name = lines[i].trim();
-
       satellites.push({
         name,
         line1: lines[i + 1].trim(),
@@ -64,11 +65,12 @@ app.get("/api/tle", async (req, res) => {
   }
 });
 
-// Serve frontend build
+// Fallback route for SPA (Vite's index.html)
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+  res.sendFile(path.join(__dirname, "dist/index.html"));
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

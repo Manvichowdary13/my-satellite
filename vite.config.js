@@ -8,12 +8,12 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  base: "./", // For build
+  base: "/", // ✅ IMPORTANT for Render deployment
   plugins: [react(), cesium()],
   server: {
     proxy: {
       "/api/tle": {
-        target: "http://localhost:3001",
+        target: "http://localhost:3001", // ✅ Local dev only
         changeOrigin: true,
       },
     },
