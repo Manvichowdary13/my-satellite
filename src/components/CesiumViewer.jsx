@@ -22,6 +22,7 @@ import {
   PolylineGlowMaterialProperty,
   // optionally, PolylineDashMaterialProperty
 } from "cesium";
+import { Clock, ClockRange, ClockStep, JulianDate, ClockViewModel } from "cesium";
 
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION_TOKEN;
@@ -43,8 +44,23 @@ const CesiumViewer = forwardRef(
     const [livePositions, setLivePositions] = useState({});
     const [nearbySats, setNearbySats] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
+const now = JulianDate.now();
+const start = JulianDate.clone(now);
+const end = JulianDate.addMinutes(now, 300, new JulianDate());
+ const clock = useMemo(() => new Clock({
+  startTime: start,
+  currentTime: start,
+  stopTime: end,
+  clockRange: ClockRange.CLAMPED,
+  clockStep: ClockStep.SYSTEM_CLOCK_MULTIPLIER,
+  multiplier: 60, // 1 sec = 1 minute
+  shouldAnimate: true,
+}), []);
 
-    const maxDistanceKm = 2000;
+
+const clockViewModel = useMemo(() => new ClockViewModel(clock), [clock]);
+
+const maxDistanceKm = 2000; // ✅ Define it here properly
 
     const INDIA_BOUNDS = {
       minLat: 6,
@@ -56,7 +72,9 @@ const CesiumViewer = forwardRef(
     useEffect(() => {
       const updatePositions = () => {
         const newPositions = {};
-        const now = new Date();
+       const cesiumTime = clock.currentTime;
+const now = JulianDate.toDate(cesiumTime);
+
 
         satellites.forEach((sat) => {
           if (!sat.line1 || !sat.line2) return;
@@ -207,7 +225,8 @@ const CesiumViewer = forwardRef(
   });
 
   return links;
-}, [satellites, groundStations, livePositions]);
+}, [satellites, groundStations, JSON.stringify(livePositions)]);
+
 
     if (!satellites.length) {
       return <div className="cesium-loading">Loading satellites…</div>;
@@ -215,15 +234,20 @@ const CesiumViewer = forwardRef(
 
     return (
       <>
-        <Viewer
-          full
-          ref={viewerRef}
-          baseLayerPicker={false}
-          timeline={false}
-          animation={false}
-          infoBox={true}
-          selectionIndicator={true}
-        >
+   <Viewer
+  full
+  ref={viewerRef}
+  baseLayerPicker={false}
+  timeline={true}
+  animation={true}
+  infoBox={true}
+  selectionIndicator={true}
+  clockViewModel={clockViewModel}
+  clock={clock} // ✅ THIS is the missing line!
+>
+
+
+
           {/* 🛰️ Satellite Entities */}
           {satellites.map((sat, i) => {
             const pos = livePositions[sat.name];
@@ -330,6 +354,7 @@ const CesiumViewer = forwardRef(
           )}
 {showGroundLinks &&
   groundLinks.map((link) => (
+
     <Entity
       key={link.id}
       name={`Link: ${link.id}`}

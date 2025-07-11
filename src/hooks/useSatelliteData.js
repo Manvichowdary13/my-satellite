@@ -93,8 +93,9 @@ export default function useSatelliteData() {
 
         setSatellites(sats);
       } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Error loading satellite data.");
+        console.error("Fetch error:", err.response?.data || err.message);
+
+       
       } finally {
         setLoading(false);
       }

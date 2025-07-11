@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import cesium from "vite-plugin-cesium";
@@ -8,20 +7,13 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [
-    react(),
-    cesium(),
-  ],
+  base: "/", // ✅ local only
+  plugins: [react(), cesium()],
   server: {
     proxy: {
       "/api/tle": {
-        target: "https://celestrak.org",
+        target: "http://localhost:3001",
         changeOrigin: true,
-        rewrite: (path) =>
-          path.replace(
-            /^\/api\/tle/,
-            "/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
-          ),
       },
     },
   },
@@ -31,6 +23,6 @@ export default defineConfig({
     },
   },
   define: {
-    CESIUM_BASE_URL: JSON.stringify("/cesium/"),
+    CESIUM_BASE_URL: JSON.stringify("/cesium/"), // ✅ for local dev
   },
 });

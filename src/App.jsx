@@ -129,6 +129,19 @@ const handleLocateMe = () => {
       </div>
     </div>
   )}
+<button
+  onClick={() => {
+    const viewer = viewerRef.current?.cesiumElement;
+    if (viewer) {
+      viewer.camera.flyTo({
+        destination: Cartesian3.fromDegrees(80.2, 13.7, 2000000), // Try SHAR for testing
+        duration: 2,
+      });
+    }
+  }}
+>
+  Zoom to SHAR
+</button>
 
   <SatelliteFilter
     search={searchText}
