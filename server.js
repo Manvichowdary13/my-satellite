@@ -1,15 +1,21 @@
-// server.js
 import express from "express";
 import axios from "axios";
-axios.defaults.adapter = "http"; // 👈 DNS workaround for Node <18
-
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// For ES modules: __dirname workaround
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
+// Middleware
 app.use(cors());
+app.use(express.static(path.join(__dirname, "../client/dist"))); // serve frontend
 
+// Satellite logic
 function guessType(name) {
   const n = name.toLowerCase();
   if (n.includes("starlink")) return "LEO";
@@ -24,19 +30,16 @@ function guessCountry(name) {
   if (/(gsat|insat|cartosat|risat|resourcesat)/.test(n)) return "India";
   if (/(cosmos|sputnik|zarya)/.test(n)) return "Russia";
   if (n.includes("galileo")) return "EU";
-  if (n.includes("beidou")) return "China";
-  if (n.includes("tianwen") || n.includes("fengyun")) return "China";
+  if (n.includes("beidou") || n.includes("tianwen") || n.includes("fengyun")) return "China";
   if (n.includes("sentinel") || n.includes("metop")) return "ESA";
   if (n.includes("himawari") || n.includes("kizuna")) return "Japan";
   return "Unknown";
 }
 
-// Proxy route to fetch TLE from CelesTrak
+// Proxy API route
 app.get("/api/tle", async (req, res) => {
   try {
-    const response = await axios.get(
-      "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
-    );
+    const response = await axios.get("https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle");
 
     const lines = response.data.trim().split("\n");
     const satellites = [];
@@ -44,10 +47,6 @@ app.get("/api/tle", async (req, res) => {
     for (let i = 0; i < lines.length; i += 3) {
       if (i + 2 >= lines.length) break;
       const name = lines[i].trim();
-
-      // 🔍 Debug log
-      console.log("Satellite:", name, "→ Type:", guessType(name));
-      console.log("Satellite:", name, "→ Country:", guessCountry(name));
 
       satellites.push({
         name,
@@ -65,6 +64,11 @@ app.get("/api/tle", async (req, res) => {
   }
 });
 
+// Serve frontend build
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
+
 app.listen(PORT, () => {
-  console.log(`🚀 TLE Proxy running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

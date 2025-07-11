@@ -1,3 +1,4 @@
+// client/vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import cesium from "vite-plugin-cesium";
@@ -7,7 +8,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  base: "/", // ✅ local only
+  base: "./", // For build
   plugins: [react(), cesium()],
   server: {
     proxy: {
@@ -23,6 +24,6 @@ export default defineConfig({
     },
   },
   define: {
-    CESIUM_BASE_URL: JSON.stringify("/cesium/"), // ✅ for local dev
+    CESIUM_BASE_URL: JSON.stringify("/cesium/"),
   },
 });
