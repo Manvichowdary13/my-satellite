@@ -8,12 +8,15 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  base: "/", // ✅ IMPORTANT for Render deployment
+  base: "/", // ✅ IMPORTANT for correct asset paths on Render
   plugins: [react(), cesium()],
+  build: {
+    outDir: "dist", // ✅ Vite will output here, server will serve this folder
+  },
   server: {
     proxy: {
       "/api/tle": {
-        target: "http://localhost:3001", // ✅ Local dev only
+        target: "http://localhost:3001", // ✅ Only used during dev
         changeOrigin: true,
       },
     },

@@ -4,15 +4,20 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
+// Needed for __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
+// Enable CORS
 app.use(cors());
-app.use(express.static(path.join(__dirname, "client/dist"))); // ✅ Make sure this path is correct
 
+// Serve static frontend build files
+app.use(express.static(path.join(__dirname, "client/dist")));
+
+// Helpers
 function guessType(name) {
   const n = name.toLowerCase();
   if (n.includes("starlink")) return "LEO";
@@ -33,6 +38,7 @@ function guessCountry(name) {
   return "Unknown";
 }
 
+// API route
 app.get("/api/tle", async (req, res) => {
   try {
     const response = await axios.get(
@@ -62,11 +68,12 @@ app.get("/api/tle", async (req, res) => {
   }
 });
 
-// ✅ FIXED: use "*" not "/*"
+// Serve frontend app for all other routes
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client/dist/index.html"));
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
